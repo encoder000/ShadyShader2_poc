@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shady Shader</title>
+    <style>
+        body {
+            background: linear-gradient(90deg, red 0%, blue 100%);
+            text-align: center;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        pre {
+            font-size: 10px;
+            font-family: monospace;
+            color: white;
+            margin: auto;
+            display: block;
+            transform: scale(0.85);
+            transform-origin: 0 0;
+            margin-top: 150px;
+            text-align: left;
+            padding: 15px;
+        }
+
+        iframe {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+
+<body>
+    <pre></pre>
+    <script>
+        var pre = document.querySelector("pre");
+
+        var art = `███████╗██╗  ██╗ █████╗ ██████╗ ██╗   ██╗       
+██╔════╝██║  ██║██╔══██╗██╔══██╗╚██╗ ██╔╝       
+███████╗███████║███████║██║  ██║ ╚████╔╝        
+╚════██║██╔══██║██╔══██║██║  ██║  ╚██╔╝         
+███████║██║  ██║██║  ██║██████╔╝   ██║          
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝    ╚═╝          
+                                                
+███████╗██╗  ██╗ █████╗ ██████╗ ███████╗██████╗ 
+██╔════╝██║  ██║██╔══██╗██╔══██╗██╔════╝██╔══██╗
+███████╗███████║███████║██║  ██║█████╗  ██████╔╝
+╚════██║██╔══██║██╔══██║██║  ██║██╔══╝  ██╔══██╗
+███████║██║  ██║██║  ██║██████╔╝███████╗██║  ██║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝`;
+
+        let i = 0;
+        function printNext() {
+            i += 50;
+            pre.innerHTML = art.slice(0, i);
+            if (i >= art.length) {
+                main();
+            } else {
+                requestAnimationFrame(printNext);
+            }
+        }
+        requestAnimationFrame(printNext);
+
+        function main() {
+            function addIframe() {
+                var iframe = document.createElement("iframe");
+                let id = Math.round(Math.random() * 100000);
+                iframe.setAttribute("src", "/frame.html");
+                document.body.prepend(iframe);
+            }
+
+            addIframe();
+        }
+
+    </script>
+</body>
+
+</html>
